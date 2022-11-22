@@ -60,8 +60,11 @@ def results():
     # For the sunrise & sunset variables, I would recommend to turn them into
     # datetime objects. You can do so using the `datetime.fromtimestamp()`
     # function.
+    datetime_object = (datetime.now()).strftime('%A, %B %d, %Y')
+
     context = {
-        'date': datetime.now(),
+        'data': result_json,
+        'date': datetime_object,
         'city': result_json['name'],
         'description': result_json['weather'][0]['description'],
         'temp': result_json['main']['temp'],
