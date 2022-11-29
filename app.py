@@ -63,7 +63,6 @@ def results():
     datetime_object = (datetime.now()).strftime('%A, %B %d, %Y')
 
     context = {
-        'data': result_json,
         'date': datetime_object,
         'city': result_json['name'],
         'description': result_json['weather'][0]['description'],
@@ -83,9 +82,12 @@ def comparison_results():
     """Displays the relative weather for 2 different cities."""
     # TODO: Use 'request.args' to retrieve the cities & units from the query
     # parameters.
-    city1 = ''
-    city2 = ''
-    units = ''
+    city1 = request.args.get('city1')
+    city2 = request.args.get('city2')
+    units = request.args.get('units')
+    city1_data = compare_city_info(city1, units)
+    city2_data = compare_city_info(city2, units)
+    datetime_object = (datetime.now()).strftime('%A, %B, %d, %Y')
 
     # TODO: Make 2 API calls, one for each city. HINT: You may want to write a
     # helper function for this!
@@ -95,10 +97,23 @@ def comparison_results():
     # HINT: It may be useful to create 2 new dictionaries, `city1_info` and
     # `city2_info`, to organize the data.
     context = {
-
+        'city1': city1_data,
+        'city2': city2_data,
+        'units_letter': get_letter_for_units(units),
+        'date': datetime_object,
+        'city1_sunset': datetime.fromtimestamp(city1_data['sys']['sunset']),
+        'city2_sunset': datetime.fromtimestamp(city2_data['sys']['sunset'])
     }
 
     return render_template('comparison_results.html', **context)
+
+
+def compare_city_info(city, units):
+    api_key = os.getenv('API_KEY')
+    response = requests.get(
+        f'https://api.openweathermap.org/data/2.5/weather?q={city}&units={units}&appid={api_key}')
+    data = response.json()
+    return data
 
 
 if __name__ == '__main__':
